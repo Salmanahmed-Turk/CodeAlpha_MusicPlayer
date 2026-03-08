@@ -1,0 +1,251 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Music Player with Album Art</title>
+    <style>
+      body {
+        margin: 0;
+        font-family: "Inter", sans-serif;
+        background: linear-gradient(135deg, #0b0f17, #181f2b);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        color: #fff;
+      }
+      .player {
+        width: 350px;
+        background: rgba(24, 31, 43, 0.85);
+        border-radius: 2rem;
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.8);
+        text-align: center;
+        padding: 2rem;
+        backdrop-filter: blur(12px);
+      }
+      .album-art {
+        width: 250px;
+        height: 250px;
+        margin: auto;
+        border-radius: 1.5rem;
+        overflow: hidden;
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
+        transition: transform 4s linear;
+      }
+      .album-art.playing {
+        transform: rotate(360deg);
+        animation: rotate 4s linear infinite;
+      }
+      @keyframes rotate {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+      .album-art img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+      .track-info {
+        margin-top: 1rem;
+      }
+      .track-title {
+        font-size: 1.2rem;
+        font-weight: 600;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .track-artist {
+        font-size: 0.9rem;
+        color: #7e9fc5;
+      }
+      .progress-container {
+        background: #0f172a;
+        height: 8px;
+        width: 100%;
+        border-radius: 4px;
+        margin: 1rem 0;
+        cursor: pointer;
+      }
+      .progress {
+        background: #1e6ac7;
+        height: 100%;
+        width: 0%;
+        border-radius: 4px;
+      }
+      .controls {
+        display: flex;
+        justify-content: center;
+        gap: 1rem;
+        margin-top: 1rem;
+      }
+      .controls button {
+        background: #1b253b;
+        border: none;
+        padding: 0.8rem 1rem;
+        border-radius: 50%;
+        font-size: 1.2rem;
+        cursor: pointer;
+        color: #fff;
+        box-shadow: 0 5px 10px rgba(0, 0, 0, 0.5);
+        transition: 0.2s;
+      }
+      .controls button:hover {
+        background: #264e7b;
+        transform: scale(1.1);
+      }
+      .volume-container {
+        margin-top: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+      input[type="range"] {
+        width: 100%;
+        -webkit-appearance: none;
+        height: 4px;
+        border-radius: 2px;
+        background: #0f172a;
+      }
+      input[type="range"]::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background: #1e6ac7;
+        cursor: pointer;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="player">
+      <div class="album-art" id="albumArt">
+        <img id="albumImage" src="" alt="Album Art" />
+      </div>
+      <div class="track-info">
+        <div class="track-title" id="trackTitle">Track Name</div>
+        <div class="track-artist" id="trackArtist">Artist</div>
+      </div>
+      <div class="progress-container" id="progressContainer">
+        <div class="progress" id="progress"></div>
+      </div>
+      <div class="controls">
+        <button id="prev">⏮</button>
+        <button id="play">▶️</button>
+        <button id="next">⏭</button>
+      </div>
+      <div class="volume-container">
+        <span>🔊</span>
+        <input
+          type="range"
+          id="volume"
+          min="0"
+          max="1"
+          step="0.01"
+          value="0.5"
+        />
+      </div>
+    </div>
+
+    <script>
+      (function () {
+        const audio = new Audio();
+        const playBtn = document.getElementById("play");
+        const nextBtn = document.getElementById("next");
+        const prevBtn = document.getElementById("prev");
+        const albumImage = document.getElementById("albumImage");
+        const albumArt = document.getElementById("albumArt");
+        const trackTitle = document.getElementById("trackTitle");
+        const trackArtist = document.getElementById("trackArtist");
+        const progressContainer = document.getElementById("progressContainer");
+        const progress = document.getElementById("progress");
+        const volumeSlider = document.getElementById("volume");
+
+        // Valid image URLs
+        const tracks = [
+          {
+            name: "Song 1",
+            artist: "Artist 1",
+            src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
+            img: "https://picsum.photos/id/237/250/250",
+          },
+          {
+            name: "Song 2",
+            artist: "Artist 2",
+            src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3",
+            img: "https://picsum.photos/id/238/250/250",
+          },
+          {
+            name: "Song 3",
+            artist: "Artist 3",
+            src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3",
+            img: "https://picsum.photos/id/239/250/250",
+          },
+        ];
+
+        let trackIndex = 0;
+        function loadTrack(index) {
+          audio.src = tracks[index].src;
+          trackTitle.textContent = tracks[index].name;
+          trackArtist.textContent = tracks[index].artist;
+          albumImage.src = tracks[index].img;
+        }
+
+        function playPause() {
+          if (audio.paused) {
+            audio.play();
+            playBtn.textContent = "⏸";
+            albumArt.classList.add("playing");
+          } else {
+            audio.pause();
+            playBtn.textContent = "▶️";
+            albumArt.classList.remove("playing");
+          }
+        }
+
+        function nextTrack() {
+          trackIndex = (trackIndex + 1) % tracks.length;
+          loadTrack(trackIndex);
+          audio.play();
+          playBtn.textContent = "⏸";
+          albumArt.classList.add("playing");
+        }
+
+        function prevTrack() {
+          trackIndex = (trackIndex - 1 + tracks.length) % tracks.length;
+          loadTrack(trackIndex);
+          audio.play();
+          playBtn.textContent = "⏸";
+          albumArt.classList.add("playing");
+        }
+
+        audio.addEventListener("timeupdate", () => {
+          const percent = (audio.currentTime / audio.duration) * 100;
+          progress.style.width = percent + "%";
+        });
+
+        progressContainer.addEventListener("click", (e) => {
+          const width = progressContainer.clientWidth;
+          const clickX = e.offsetX;
+          audio.currentTime = (clickX / width) * audio.duration;
+        });
+
+        volumeSlider.addEventListener(
+          "input",
+          (e) => (audio.volume = e.target.value),
+        );
+        audio.addEventListener("ended", nextTrack);
+
+        playBtn.addEventListener("click", playPause);
+        nextBtn.addEventListener("click", nextTrack);
+        prevBtn.addEventListener("click", prevTrack);
+
+        loadTrack(trackIndex);
+      })();
+    </script>
+  </body>
+</html>
