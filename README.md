@@ -1,36 +1,34 @@
 # CodeAlpha_MusicPlayer
-Advanced Music Player
+Music Player
 
-A modern, visually appealing music player built with HTML, CSS, and JavaScript in a single file.
+A modern and interactive Music Player Web Application built using HTML, CSS, and JavaScript in a single file. The player provides a smooth user experience with dynamic controls, playlist support, and an eye-catching interface.
 
-Features
+ Features
 
-Play, pause, next, and previous controls
+Play / Pause music
 
-Album/track image display
+Next and Previous track controls
 
-Track title and artist information
+Album artwork display with animation
 
-Interactive progress bar (click to seek)
+Dynamic song title and artist display
 
-Volume control
+Interactive progress bar with seek functionality
 
-Rotating album art animation while playing
+Current time and total duration display
 
-Responsive and eye-catching design
+Volume control slider
 
-How to Use
+Clickable playlist to select songs
 
-Clone or download the repository.
+Automatic playback of the next track
 
-Open the index.html file in any modern browser.
+Responsive and visually appealing UI
 
-Click Play to start listening.
+🛠 Technologies Used
 
-Use Next/Previous to change songs and volume slider to adjust sound.
+HTML5
 
-Notes
+CSS3
 
-All songs and images are loaded from online sources.
-
-You can replace the audio URLs and image URLs in the <script> section with your own files.
+JavaScript (Vanilla JS)
